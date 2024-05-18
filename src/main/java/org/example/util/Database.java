@@ -1,4 +1,4 @@
-package org.example;
+package org.example.util;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -6,17 +6,15 @@ import java.sql.SQLException;
 
 public class Database {
     private static Database instance;
-    private Connection connection;
+    private String url = "jdbc:h2:~/megasoft";
+    private String user = "sa";
+    private String password = "";
 
     private Database() {
         try {
-            String url = "jdbc:h2:~/megasoft";
-            String user = "sa";
-            String password = "your_database_password";
-            this.connection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Failed to connect to the database", e);
+            Class.forName("org.h2.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Failed to load H2 driver", e);
         }
     }
 
@@ -32,6 +30,10 @@ public class Database {
     }
 
     public Connection getConnection() {
-        return connection;
+        try {
+            return DriverManager.getConnection(url, user, password);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to connect to the database", e);
+        }
     }
 }
